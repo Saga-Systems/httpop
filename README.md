@@ -1,2 +1,2 @@
-# httpop
+# HTTPoP
 HyperText Transfer Protocol over People
