@@ -10,7 +10,14 @@ require('httpop.php');
 
 $httpop = new httpop();
 
-echo $httpop->decode_httpop("48656c6c6f2c20576f726c64", "Hello");
+$encoded = $httpop->httpop_encode("Hello, World!", "Hello");
 
+echo "Encoded is: ".$encoded."<br/>";
+
+echo "Decoded is: ".$httpop->httpop_decode($encoded, "Hello")."<br/>";
+
+echo "Encoded URL is: ".$httpop->httpop_encode_url("","HelloWorld")."<br/>";
+
+echo "Decoded URL is: ".$httpop->httpop_decode_url("","HelloWorld")."<br/>";
 
 ?>

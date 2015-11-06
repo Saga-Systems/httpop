@@ -10,36 +10,53 @@
 
 class httpop
 {
-    public function encode_httpop($input, $encryptionKey = "") {
-        if($encryptionKey != "") {
-            $encoded = bin2hex(base64_encode(($input));
+    public function httpop_encode($input, $encryptionKey = "") {
+        if($encryptionKey == "") {
+            $encoded = bin2hex(base64_encode(($input)));
             return $encoded;
         } else {
+
             $encrypted = openssl_encrypt($input,"AES256",$encryptionKey);
-            $encoded = bin2hex(base64_encode($encrypted));
+            $base64 = base64_encode($encrypted);
+            $encoded = bin2hex($base64);
         }
         return $encoded;
     }
 
-    public function decode_httpop($input, $encryptionKey = "") {
-        if($encryptionKey != "") {
-            $decoded = pack('H*',base64_decode($input));
+    public function httpop_decode($input, $encryptionKey = "") {
+        if($encryptionKey == "") {
+            $decoded = base64_decode(pack('H*',$input));
             return $decoded;
         } else {
-            $decrypted = openssl_decrypt($input,"AES256",$encryptionKey);
-            $decoded = pack('H*',base64_decode($decrypted));
+            $raw = base64_decode(pack("H*",$input));
+            $decoded = openssl_decrypt($raw,"AES256",$encryptionKey);
         }
         return $decoded;
     }
 
     public function httpop_encode_url($url, $encryptionKey = "") {
-        $raw = file_get_contents($url);
+        $rawFile = file_get_contents($url);
 
-        if($encryptionKey != "") {
-            $encoded = bin2hex($raw);
+        if($encryptionKey == "") {
+            return bin2hex(base64_encode($rawFile));
         } else {
-            $encrypted = openssl_encrypt($raw, "AES256", $encryptionKey);
-            $encoded = bin2hex($encrypted);
+            $encrypted = openssl_encrypt($rawFile, "AES256", $encryptionKey);
+            return bin2hex(base64_encode(openssl_encrypt($rawFile, "AES256", $encryptionKey)));
         }
+        //return $encoded;
     }
+
+    public function httpop_decode_url($url, $encryptionKey = "") {
+        $rawFile = file_get_contents($url);
+
+        if($encryptionKey == "") {
+            return base64_decode(pack('H*',$rawFile));
+        } else {
+            $nobase64 = base64_decode(pack('H*',$rawFile));
+            return openssl_decrypt($nobase64, "AES256", $encryptionKey);
+        }
+        //return $decoded;
+    }
+
+
 }
